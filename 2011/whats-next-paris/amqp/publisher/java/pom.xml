@@ -1,0 +1,7 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <name>AMQP Java Stock Price Publisher</name>
+  <groupId>com.rabbitmq.examples</groupId>
+  <artifactId>stock.publisher</artifactId>
+
+</project>
