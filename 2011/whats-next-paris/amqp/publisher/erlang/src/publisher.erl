@@ -17,12 +17,14 @@ stop(Pid) ->
     Pid ! stop.
 
 loop(Channel) ->
-    amqp_channel:cast(Channel,
-                      #'basic.publish'{
-                        exchange = <<"">>,
-                        routing_key = <<"stock.prices">>},
-                      #amqp_msg{payload =
-                                    list_to_binary(next_price())}),
+    PublishMethod =
+        #'basic.publish'{exchange    = <<"">>,
+                         routing_key = <<"stock.prices">>},
+
+    Msg = #amqp_msg{payload = list_to_binary(next_price())},
+
+    amqp_channel:cast(Channel, PublishMethod, Msg),
+
     timer:sleep(500),
     receive
         stop -> ok
