@@ -1,0 +1,8 @@
+A simple consumer written in Python using the Puka client.
+
+To build and run simply run:
+
+   make clean && make run
+
+You may need to edit the variables at the top of the Makefile to point
+to the correct virtualenv and pip commands for your setup.
