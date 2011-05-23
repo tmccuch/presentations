@@ -4,3 +4,6 @@ Expects an AMQP-compliant broker to be running on localhost at port
 5672.
 
 Connects to the broker with username "guest" and password "guest".
+
+To build simply run 'make run'. This will automatically download the
+required dependencies.
