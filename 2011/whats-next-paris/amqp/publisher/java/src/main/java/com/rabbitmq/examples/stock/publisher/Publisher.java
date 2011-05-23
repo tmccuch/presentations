@@ -29,6 +29,8 @@ public class Publisher {
         System.in.read();
         thread.interrupt();
 
+        channel.close();
+        connection.close();
     }
 
     private static final class PublishTask implements Runnable {
