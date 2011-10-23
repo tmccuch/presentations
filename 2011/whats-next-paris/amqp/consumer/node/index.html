@@ -11,12 +11,10 @@
         elem.innerHTML = price_data[1];
       };
 
-      var sock = new io.Socket();
-      sock.connect();
-      sock.disconnect();
+      var sock = io.connect("http://localhost");
 
-      sock.on('message', function(data){
-        price(data)
+      sock.on('msg', function(data){
+       price(data)
       });
     </script>
     <style type="text/css">
