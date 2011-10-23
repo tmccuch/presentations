@@ -5,8 +5,6 @@
 
 -include_lib("amqp_client/include/amqp_client.hrl").
 
--define(STOCK_SYMBOLS, ["ORCL", "MSFT", "HPQ"]).
-
 start() ->
     random:seed(now()),
     {ok, Connection} = amqp_connection:start(#amqp_params_network{}),
@@ -21,7 +19,7 @@ loop(Channel) ->
         #'basic.publish'{exchange    = <<"">>,
                          routing_key = <<"stock.prices">>},
 
-    Msg = #amqp_msg{payload = list_to_binary(next_price())},
+    Msg = #amqp_msg{payload = list_to_binary(util:next_price())},
 
     amqp_channel:cast(Channel, PublishMethod, Msg),
 
@@ -32,11 +30,6 @@ loop(Channel) ->
         1 -> loop(Channel)
     end.
 
-next_price() ->
-    io_lib:fwrite("~s,~.2f", [lists:nth(
-                              random:uniform(
-                                length(?STOCK_SYMBOLS)), ?STOCK_SYMBOLS),
-                            random:uniform() * 5]).
 
 
 
