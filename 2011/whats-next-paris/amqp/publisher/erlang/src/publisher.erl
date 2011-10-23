@@ -5,7 +5,7 @@
 
 -include_lib("amqp_client/include/amqp_client.hrl").
 
--define(STOCK_SYMBOLS, ["GOOG", "VMW", "IBM"]).
+-define(STOCK_SYMBOLS, ["ORCL", "MSFT", "HPQ"]).
 
 start() ->
     random:seed(now()),
