@@ -1,4 +1,4 @@
-VERSION=2.4.1
+VERSION=2.6.1
 DEPS=amqp_client rabbit_common
 
 DEPS_DIR=deps

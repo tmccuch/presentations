@@ -9,7 +9,7 @@
 
 start() ->
     random:seed(now()),
-    {ok, Connection} = amqp_connection:start(network, #amqp_params{}),
+    {ok, Connection} = amqp_connection:start(#amqp_params_network{}),
     {ok, Channel} = amqp_connection:open_channel(Connection),
     spawn(?MODULE, loop, [Channel]).
 
