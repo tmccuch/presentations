@@ -12,10 +12,6 @@ import java.util.Random;
  */
 public class Publisher {
 
-    private static final Random RANDOM = new Random(System.currentTimeMillis());
-
-    private static final String[] TICKER_SYMBOLS = {"GOOG", "VMW", "AAPL"};
-
     public static void main(String[] args) throws Exception {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setUsername("guest");
@@ -42,10 +38,12 @@ public class Publisher {
         }
 
         public void run() {
+            PriceGenerator generator = new PriceGenerator();
+
             while (!Thread.interrupted()) {
 
                 try {
-                    String price = nextPrice();
+                    String price = generator.nextPrice();
                     System.out.println(price);
                     channel.basicPublish("", "stock.prices", null, price.getBytes());
                     Thread.sleep(500);
@@ -56,12 +54,5 @@ public class Publisher {
                 }
             }
         }
-    }
-
-    private static String nextPrice() {
-        String ticker = TICKER_SYMBOLS[RANDOM.nextInt(TICKER_SYMBOLS.length)];
-        float price = RANDOM.nextFloat() * 5;
-        return String.format("%s,%2" +
-                ".2f", ticker, price);
     }
 }
