@@ -1,8 +1,8 @@
 <html>
   <head>
     <title>Node.js AMQP Consumer Demo</title>
-    <script src="/socket.io/socket.io.js"></script>
-  </head>
+    <script src="http://sockjs.github.com/sockjs-client/sockjs-latest.min.js"></script>
+ </head>
   <body>
     <script>
       function price(data) {
@@ -11,12 +11,13 @@
         elem.innerHTML = price_data[1];
       };
 
-      var sock = io.connect("http://localhost");
+      var sockjs_url = '/stocks';
+      var sockjs = new SockJS(sockjs_url);
 
-      sock.on('msg', function(data){
-       price(data)
-      });
-    </script>
+      sockjs.onmessage = function(e) {
+         price(e.data);
+      };
+   </script>
     <style type="text/css">
       .container{
         border-collapse: separate;

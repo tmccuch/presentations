@@ -1,34 +1,19 @@
-var http = require('http').createServer(handler);
-var url  = require('url');
-var io   = require('socket.io').listen(http);
-var fs   = require('fs');
-var util = require('util');
-var amqp = require('amqp');
+var http        = require('http');
+var sockjs      = require('sockjs');
+var amqp        = require('amqp');
+var node_static = require('node-static');
+var util        = require('util');
 
-function handler(req, res) {
-    var path = url.parse(req.url).pathname;
-    switch (path){
-    case '/':
-        path = '/index.html';
-    case '/index.html':
-        fs.readFile(__dirname + path, function(err, data){
-            if (err) return send404(res);
-            res.writeHead(200, {'Content-Type': 'text/html'});
-            res.write(data, 'utf8');
-            res.end();
-        });
-        break;
-    default: send404(res);
-    }
-};
+var sockjs_opts = {sockjs_url: "http://sockjs.github.com/sockjs-client/sockjs-latest.min.js"};
 
-send404 = function(res){
-    res.writeHead(404);
-    res.write('404');
-    res.end();
-};
+// Sock JS Server
+var stocks_server = new sockjs.Server(sockjs_opts);
+stocks_server.on('open', function(client) {
+    amqp_connect(client);
+});
 
-io.sockets.on('connection', function(client){
+// AMQP Adapter
+function amqp_connect(client) {
     var connection = amqp.createConnection({'host': '127.0.0.1', 'port': 5672});
 
     connection.on('ready', function() {
@@ -38,15 +23,28 @@ io.sockets.on('connection', function(client){
                          function(queue) {
                              queue.bind('amq.direct', 'stock.prices');
                              queue.subscribe(function(message) {
-                                 client.emit('msg', message.data.toString());
+                                 client.send(message.data.toString());
                              });
                          });
-
     });
+}
 
-    client.on('disconnect', function(){
-        util.debug("Client disconnected");
-        connection.end();
-    });
-});
-http.listen(8080);
+// Static files server
+var static_directory = new node_static.Server(__dirname);
+
+// Usual http stuff
+var server = http.createServer();
+server.addListener('request',
+                   function(req, res) {
+                       static_directory.serve(req, res);
+                   });
+
+server.addListener('upgrade',
+                   function(req,res){
+                       res.end();
+                   });
+
+stocks_server.installHandlers(server, {prefix:'[/]stocks'});
+server.listen(8080);
+
+
